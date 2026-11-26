@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: replay-lab-demo
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /
+    envVars:
+      - key: RENDER_DATABASE_URL
+        fromDatabase:
+          name: replay-lab-demo-db
+          property: connectionString
+      - key: REPLAY_DB_USER
+        fromDatabase:
+          name: replay-lab-demo-db
+          property: user
+      - key: REPLAY_DB_PASSWORD
+        fromDatabase:
+          name: replay-lab-demo-db
+          property: password
+databases:
+  - name: replay-lab-demo-db
+    plan: free
+    region: singapore
+    databaseName: replay_lab
+    postgresMajorVersion: "18"
+    ipAllowList: []

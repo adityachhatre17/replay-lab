@@ -55,3 +55,14 @@ bash submission/run-demo.sh
 The runner installs the locked frontend dependencies, builds both apps, starts a fresh temporary PostgreSQL cluster, and runs the checks through the built frontend's API proxy. It shuts down the demo services when finished. It uses ports 5174, 8089, and 55433 by default, independently of the regular development stack. Override them with `REPLAY_DEMO_WEB_PORT`, `REPLAY_DEMO_API_PORT`, and `REPLAY_DEMO_DB_PORT` if needed.
 
 The browser and smoke test share the [synthetic checkout fixture](submission/fixtures/legacy-checkout.json). The command exits unsuccessfully if the legacy case differs from 500 with zero payments on the original logic or 200 with exactly one payment on the patch. It also checks the saved regression rerun and a modern order that succeeds under both versions.
+
+## Hosted contest demo on Render
+
+The root `Dockerfile` bundles the built React UI in the Spring Boot JAR, so the site and API share one HTTPS origin. The [Render Blueprint](render.yaml) provisions a free Docker web service and a free PostgreSQL database in Singapore. It injects credentials and uses a private database connection with TLS. The database blocks external access.
+
+1. Push the deployment files to your GitHub repository.
+2. Sign in to the [Render dashboard](https://dashboard.render.com/) and choose **New → Blueprint**.
+3. Connect the GitHub repository, select the branch containing `render.yaml`, and apply the Blueprint. Review the free plans before applying.
+4. Once the web service is live, open its HTTPS URL. Create a demo account and run the legacy checkout comparison. Verify 500 with zero payments on the original logic and 200 with one payment on the patch. Save and rerun the case.
+
+Use only synthetic data in the hosted contest demo. Render's [free-plan limits](https://render.com/docs/free) include web service sleep and database expiration.
