@@ -1,0 +1,7 @@
+{
+  "accounts": [{ "id": "ACCT-1", "currency": "INR" }],
+  "orders": [
+    { "id": "ORD-58291", "accountId": "ACCT-1", "amount": 2499, "currency": null },
+    { "id": "ORD-58292", "accountId": "ACCT-1", "amount": 1299, "currency": "INR" }
+  ]
+}

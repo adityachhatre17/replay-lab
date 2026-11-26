@@ -1,0 +1,32 @@
+export const incidents = [
+  {
+    id: 'INC-1042', title: 'Checkout fails for legacy orders', service: 'checkout-service', priority: 'P1',
+    endpoint: 'POST /api/checkout', version: 'v2.4.1', patch: 'v2.4.2', time: '10:42:18',
+    description: 'Orders created before the latest schema update fail when customers try to complete checkout.',
+    exception: 'MissingOrderFieldException', error: 'Required field currency is missing from order ORD-58291',
+    source: 'CheckoutService.java:84', fixture: { orderId: 'ORD-58291', amount: 2499, currency: null },
+    diagnosis: 'Legacy orders predate the currency field. Checkout reads the missing value before the payment request is constructed.',
+    fix: 'Normalize legacy orders to their stored account currency before building the payment request.',
+    assertion: 'Exactly one payment recorded by the stub',
+  },
+  {
+    id: 'INC-1041', title: 'Order history fails on first visit', service: 'orders-service', priority: 'P2',
+    endpoint: 'GET /api/orders', version: 'v1.8.0', patch: 'v1.8.1', time: '09:16:04',
+    description: 'New accounts receive an error when opening order history before placing their first order.',
+    exception: 'EmptyOrderHistoryException', error: 'Order history lookup returned no rows',
+    source: 'OrderHistoryService.java:52', fixture: { accountId: 'ACCT-302', orders: [] },
+    diagnosis: 'The service assumes every account has an order and reads the first row before checking the result.',
+    fix: 'Return an empty list when the repository finds no orders.',
+    assertion: 'Response contains an empty orders list',
+  },
+  {
+    id: 'INC-1038', title: 'Receipts fail for guest checkouts', service: 'receipts-service', priority: 'P2',
+    endpoint: 'GET /api/receipts', version: 'v1.3.4', patch: 'v1.3.5', time: '08:27:32',
+    description: 'Guest customers cannot open their receipt after a successful checkout.',
+    exception: 'ReceiptMappingException', error: 'Guest receipt has no account profile',
+    source: 'ReceiptMapper.java:31', fixture: { receiptId: 'RCP-849', accountProfile: null },
+    diagnosis: 'Receipt formatting assumes an account profile exists, but guest orders store contact details on the receipt.',
+    fix: 'Use receipt contact details when an account profile is absent.',
+    assertion: 'Guest receipt renders with its stored contact details',
+  },
+];
